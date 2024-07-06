@@ -19,7 +19,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     # Replace this with your bucket name!
-    bucket         = "gitlab-pipeline-2021"
+    bucket         = "tf-gitlab-pipeline-2021"
     key            = "jjtech/terraform.tfstate"
     region         = "us-east-1"
 
