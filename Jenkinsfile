@@ -1,79 +1,126 @@
+// pipeline {
+//     agent any
+    
+//     tools {
+//           terraform 'terraform'
+//         }
+
+//     environment {
+//         AWS_DEFAULT_REGION = "${params.region}"
+//     }
+
+//     parameters {
+//         string(name: 'region', defaultValue: 'us-east-1', description: 'AWS region to use')
+//         string(name: 'environment', defaultValue: 'development', description: 'Workspace/environment file to use for deployment')
+//     }
+
+//     //  environment {
+//     //     AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
+//     //     AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+//     // }
+
+//     stages {
+//         stage('Git Checkout') {
+//           steps {
+//             echo 'Cloning the application code...'
+//             git branch: 'main', url: 'https://gitlab.com/anselmenumbisia/tf-pipeline-project.git'
+//           }
+//         }
+//         stage('format') {
+//             steps {
+//                 sh 'terraform fmt'
+//             }
+//         }
+//         stage('validate') {
+//             steps {
+//                 sh 'terraform init'
+//                 sh 'terraform validate'
+//             }
+//         }
+//         stage('plan') {
+//             steps {
+//                 sh 'terraform init'
+//                 sh 'terraform workspace select ${environment} || terraform workspace new ${environment}'
+//                 sh 'terraform plan -out=tfplan'
+//                 stash includes: 'tfplan', name: 'terraform-plan'
+//             }
+//             post {
+//                 success {
+//                     archiveArtifacts artifacts: 'tfplan', onlyIfSuccessful: true
+//                 }
+//             }
+//         }
+//         stage('approval') {
+//             steps {
+//                 input "Please review the Terraform plan and click 'Proceed' to apply it"
+//             }
+//         }
+//         stage('apply') {
+//             steps {
+//                 unstash 'terraform-plan'
+//                 sh 'terraform apply -auto-approve tfplan'
+//             }
+//         }
+//          stage('approve destroy') {
+//             steps {
+//                 input "Please review the Terraform plan and click 'Proceed' to destroy it"
+//             }
+//         }
+//         stage('destroy') {
+//             steps {
+//                 unstash 'terraform-plan'
+//                 sh 'terraform destroy --auto-approve'
+//             }
+//         }
+       
+//     }
+// }
+
+# Jenkinsfile-Terraform-Pipeline-test
 pipeline {
     agent any
     
     tools {
-          terraform 'terraform'
-        }
-
-    environment {
-        AWS_DEFAULT_REGION = "${params.region}"
+        terraform 'terraform'
     }
-
-    parameters {
-        string(name: 'region', defaultValue: 'us-east-1', description: 'AWS region to use')
-        string(name: 'environment', defaultValue: 'development', description: 'Workspace/environment file to use for deployment')
-    }
-
-    //  environment {
-    //     AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
-    //     AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-    // }
-
+    
     stages {
         stage('Git Checkout') {
-          steps {
-            echo 'Cloning the application code...'
-            git branch: 'main', url: 'https://gitlab.com/anselmenumbisia/tf-pipeline-project.git'
-          }
-        }
-        stage('format') {
             steps {
+                echo "Cloning the application code ..."
+                git branch: 'main', url: 'https://github.com/Mordely2021/Jenkins-Terraform-Pipeline.git'
+            }
+        }
+        stage('Format') {
+            steps {
+                echo "Formatting the application code ..."
                 sh 'terraform fmt'
             }
         }
-        stage('validate') {
+        stage('Validate') {
             steps {
+                echo "Initializing the environment ..."
                 sh 'terraform init'
                 sh 'terraform validate'
             }
         }
-        stage('plan') {
+        stage('Plan') {
             steps {
-                sh 'terraform init'
-                sh 'terraform workspace select ${environment} || terraform workspace new ${environment}'
-                sh 'terraform plan -out=tfplan'
-                stash includes: 'tfplan', name: 'terraform-plan'
-            }
-            post {
-                success {
-                    archiveArtifacts artifacts: 'tfplan', onlyIfSuccessful: true
-                }
+                echo "Generating a plan ..."
+                sh 'terraform plan'
             }
         }
-        stage('approval') {
+        stage('Apply') {
             steps {
-                input "Please review the Terraform plan and click 'Proceed' to apply it"
+                echo "Provisioning the resources ..."
+                sh 'terraform apply --auto-approve'
             }
         }
-        stage('apply') {
+        stage('Destroy') {
             steps {
-                unstash 'terraform-plan'
-                sh 'terraform apply -auto-approve tfplan'
-            }
-        }
-         stage('approve destroy') {
-            steps {
-                input "Please review the Terraform plan and click 'Proceed' to destroy it"
-            }
-        }
-        stage('destroy') {
-            steps {
-                unstash 'terraform-plan'
+                echo "Destroying the resources ..."
                 sh 'terraform destroy --auto-approve'
             }
         }
-       
     }
 }
-
-

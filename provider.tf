@@ -20,7 +20,7 @@ terraform {
   backend "s3" {
     # Replace this with your bucket name!
     bucket         = "tf-gitlab-pipeline-2021"
-    key            = "jjtech/terraform.tfstate"
+    key            = "mordely/terraform.tfstate"
     region         = "us-east-1"
 
     # Replace this with your DynamoDB table name!
