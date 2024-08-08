@@ -1,4 +1,4 @@
-on// pipeline {
+// pipeline {
 //     agent any
     
 //     tools {
