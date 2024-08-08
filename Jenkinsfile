@@ -1,4 +1,4 @@
-// pipeline {
+on// pipeline {
 //     agent any
     
 //     tools {
@@ -99,7 +99,7 @@ pipeline {
         stage('Validate') {
             steps {
                 echo "Initializing the environment ..."
-                sh 'terraform init'
+                sh 'terraform init -reconfigure'
                 sh 'terraform validate'
             }
         }
